@@ -1,8 +1,8 @@
 
 
-import { Providers } from "./providers";
+import { Providers } from "./components/providers";
 import { M_PLUS_1 } from "next/font/google";
-import Header from "./components/Header";
+import Header from "./components/ui/Header";
 
 // ★部分的に使えるフォント
 export const mplus1 = M_PLUS_1({
