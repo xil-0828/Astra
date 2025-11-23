@@ -1,27 +1,20 @@
 import { Button, Card, Image, Text } from "@chakra-ui/react";
-
-export default function ReviewThumnail() {
+type Props = {
+  image: string;
+  title: string;
+  description: string;
+};
+export default function ReviewThumbnail({ image, title, description }: Props) {
   return (
     <Card.Root w="100%" p="0" overflow="hidden">
-      <Image
-        src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc"
-        alt="Green double couch with wooden legs"
-      />
+      <Image src={image} alt={title} />
 
       <Card.Body>
-        <Card.Title>Living room Sofa</Card.Title>
-
-        <Card.Description>
-          This sofa is perfect for modern tropical spaces, baroque inspired
-          spaces.
-        </Card.Description>
-
-        <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-          $450
-        </Text>
+        <Card.Title>{title}</Card.Title>
+        <Card.Description>{description}</Card.Description>
       </Card.Body>
 
-      <Card.Footer >
+      <Card.Footer>
         <Button variant="solid">Buy now</Button>
         <Button variant="ghost">Add to cart</Button>
       </Card.Footer>

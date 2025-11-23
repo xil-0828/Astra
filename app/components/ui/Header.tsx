@@ -1,7 +1,7 @@
 
 
 import { Box, Flex, Text, HStack } from "@chakra-ui/react";
-
+import HeaderAuthButtons from "./HeaderAuthButtons";
 
 export default async function Header() {
   return (
@@ -27,7 +27,7 @@ export default async function Header() {
 
         {/* 右側：ログイン/ログアウトボタン */}
         <HStack>
-          
+          <HeaderAuthButtons />
         </HStack>
       </Flex>
     </Box>
