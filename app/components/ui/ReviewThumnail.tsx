@@ -17,7 +17,7 @@ export default function ReviewThumnail({
   image,
   title,
   episodes = 0,
-  score = 0,
+  score = 4.5,
   rank = 0,
   members = 0,
   genres = [],
@@ -25,8 +25,8 @@ export default function ReviewThumnail({
   isLoading = false,
 }: Props) {
   return (
-    <Card.Root w="sm" variant="subtle" bg="white">
-      <HStack align="flex-start" spacing={5}>
+    <Card.Root w="sm" variant="subtle" bg="white" fontWeight={300}>
+      <HStack align="center" gap={5}>
         {/* 画像 Skeleton */}
         <Box w="150px" h="220px" position="relative" flexShrink={0}>
           {isLoading ? (
@@ -45,7 +45,7 @@ export default function ReviewThumnail({
         </Box>
 
         {/* テキスト Skeleton */}
-        <VStack align="start" spacing={1} flex="1">
+        <VStack align="start" flex="1">
           {isLoading ? (
             <>
               <Skeleton w="80px" h="12px" />
@@ -56,41 +56,37 @@ export default function ReviewThumnail({
             </>
           ) : (
             <>
-              <Text color="gray.600" fontSize="sm">
+              <Text fontSize="sm" ml={1}>
                 {status}
               </Text>
 
-              <Text color="gray.600" fontSize="sm">
-                {episodes} エピソード
+              <Text fontSize="13px">
+                {episodes} episodes
               </Text>
 
-              <Text fontWeight="bold" fontSize="xl" mt={2}>
+              <Text  fontSize="md" mt={1}>
                 {title}
               </Text>
 
-              <HStack spacing={4} mt={1}>
-                <VStack align="start" spacing={0}>
-                  <Text fontSize="lg">⭐ {score}</Text>
-                  <Text fontSize="xs" color="gray.500">
-                    {members.toLocaleString()} 人のユーザー
-                  </Text>
+              <HStack mt={1} align="end">
+                <VStack align="start">
+                  <Text fontSize="sm">★ {score}</Text>
                 </VStack>
 
-                <VStack align="start" spacing={0}>
-                  <Text fontSize="lg">#{rank}</Text>
-                  <Text fontSize="xs" color="gray.500">
-                    ランキング
-                  </Text>
+                <VStack align="start">
+                  <Text fontSize="xs">{rank} users</Text>
                 </VStack>
               </HStack>
-
-              <HStack spacing={4} mt={2}>
-                {genres.map((g) => (
-                  <Text key={g} fontSize="sm">
-                    {g}
-                  </Text>
-                ))}
+              <HStack mt={1}>
+                <Text fontSize="xs">
+                    #SF
+                </Text>
+                <Text fontSize="xs">
+                    #ドラマ
+                </Text>
               </HStack>
+
+
             </>
           )}
         </VStack>

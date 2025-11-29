@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ReviewThumbnail from "./ReviewThumnail";
-import { SimpleGrid } from "@chakra-ui/react";
+import { Box, HStack } from "@chakra-ui/react";
 
 type Anime = {
   mal_id: number;
@@ -21,41 +21,49 @@ export default function TestJikan() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch("/api/anime?q=black");
+      const res = await fetch("/api/anime?q=ブル");
       const json = await res.json();
       setResult(json.data);
-      setLoading(false); // ← 読み込み完了
+      setLoading(false);
     }
-
     load();
   }, []);
 
   return (
-    <SimpleGrid
-      columns={{ base: 1, md: 2, lg:3 }}
-      placeItems="center"
+    <Box
       w="100%"
-      gap={6}
+      overflowX="auto"
+      css={{
+    scrollbarWidth: "none", // Firefox
+    "&::-webkit-scrollbar": {
+      display: "none", // Chrome / Safari
+    },
+  }}
     >
-      {/* ⭐ ローディング中は Skeleton のダミーを表示 */}
-      {loading &&
-        [...Array(6)].map((_, i) => (
-          <ReviewThumbnail key={i} isLoading />
-        ))}
+      <HStack>
+        {/* ローディング */}
+        {loading &&
+          [...Array(10)].map((_, i) => (
+            <Box key={i} mr={4} display="inline-block">
+              <ReviewThumbnail isLoading />
+            </Box>
+          ))}
 
-      {/* ⭐ データ来たら本物のカードを表示 */}
-      {!loading &&
-        result.map((anime) => (
-          <ReviewThumbnail
-            key={anime.mal_id}
-            image={
-              anime.images.webp?.image_url ||
-              anime.images.jpg?.image_url ||
-              ""
-            }
-            title={anime.title_japanese || anime.title}
-          />
-        ))}
-    </SimpleGrid>
+        {/* 本番データ */}
+        {!loading &&
+          result.map((anime) => (
+            <Box key={anime.mal_id} mr={4} display="inline-block">
+              <ReviewThumbnail
+                image={
+                  anime.images.webp?.image_url ||
+                  anime.images.jpg?.image_url ||
+                  ""
+                }
+                title={anime.title_japanese || anime.title}
+              />
+            </Box>
+          ))}
+      </HStack>
+    </Box>
   );
 }
