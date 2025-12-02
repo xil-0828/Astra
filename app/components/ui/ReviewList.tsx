@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import ReviewThumbnail from "./ReviewThumnail";
-import { SimpleGrid, HStack, Input, Button, Box } from "@chakra-ui/react";
+import SearchBar from "./SearchBar"
+import { SimpleGrid, Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
 type Anime = {
@@ -40,27 +41,20 @@ export default function AnimeListPage() {
     loadAnime(input);
   };
 
-  // ⭐ id だけ渡して detail ページへ
   const goDetail = (anime: Anime) => {
     router.push(`/anime/${anime.mal_id}`);
   };
 
   return (
     <Box w="100%" px={3} py={3}>
-      {/* ---- 検索バー ---- */}
-      <HStack mb={4}>
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="作品名で検索"
-          fontSize="md"
-        />
-        <Button onClick={handleSearch} colorScheme="blue">
-          検索
-        </Button>
-      </HStack>
+      
+      {/* ⭐ 分離された検索バー */}
+      <SearchBar
+        value={input}
+        onChange={setInput}
+        onSearch={handleSearch}
+      />
 
-      {/* ---- 一覧グリッド ---- */}
       <SimpleGrid
         w="100%"
         gap={6}

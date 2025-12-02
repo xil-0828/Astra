@@ -14,7 +14,6 @@ import {
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-
 export default function AnimeDetailPage() {
   const params = useParams();
   const id = params.id;
@@ -77,7 +76,9 @@ export default function AnimeDetailPage() {
   if (loading) return <Box p={5}>読み込み中...</Box>;
 
   return (
+    
     <Box px={5} py={5} textAlign="center">
+
       {/* ---- タイトル ---- */}
       <Heading fontSize="2xl" mb={3}>
         {anime?.title_japanese || anime?.title}
