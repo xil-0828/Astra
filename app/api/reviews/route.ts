@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 // POST: Insert Review
 // -----------------------
 export async function POST(req: Request) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const body = await req.json();
 
   const { anime_id, score, comment } = body;
@@ -45,7 +45,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const anime_id = searchParams.get("anime_id");
 
-  const supabase = createClient();
+  const supabase = await createClient(); // ← ★ ここも async
 
   const { data, error } = await supabase
     .from("reviews")
