@@ -1,12 +1,12 @@
 
 
 
-import ReviewList from "./components/ui/ReviewList";
+import AnimeList from "./components/ui/AnimeList";
 
 export default function Page() {
   return (
     <main>
-      <ReviewList />
+      <AnimeList />
     </main>
   );
 }

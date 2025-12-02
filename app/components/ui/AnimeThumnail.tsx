@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Card, Text, Box, HStack, VStack, Skeleton, SkeletonText } from "@chakra-ui/react";
+import { Card, Text, Box, HStack, VStack, Skeleton } from "@chakra-ui/react";
 
 type Props = {
   image?: string;
@@ -13,7 +13,7 @@ type Props = {
   isLoading?: boolean; // ← 追加
 };
 
-export default function ReviewThumnail({
+export default function AnimeThumnail({
   image,
   title,
   episodes = 0,

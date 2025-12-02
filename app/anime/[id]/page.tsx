@@ -15,7 +15,7 @@ import ReviewForm from "@/app/components/ui/ReviewForm";
 export default function AnimeDetailPage() {
   const params = useParams();
   const id = params.id;
-
+  
   const [anime, setAnime] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<any[]>([]);

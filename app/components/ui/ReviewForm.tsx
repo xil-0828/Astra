@@ -67,7 +67,7 @@ export default function ReviewForm({ animeId, onSubmitted }: ReviewFormProps) {
       <VStack>
         <RatingGroup.Root
           value={score}
-          onValueChange={(v) => setScore(v)}
+          onValueChange={(details) => setScore(details.value)}
           count={5}
           size="lg"
         >
