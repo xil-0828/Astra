@@ -10,11 +10,17 @@ import {
   Textarea,
   Button,
   VStack,
-  HStack,
+  RatingGroup,
 } from "@chakra-ui/react";
+
 import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client"; // ← ☆ここ重要☆
+import { useRouter } from "next/navigation";
 
 export default function AnimeDetailPage() {
+  const supabase = createClient(); // ← ☆毎回これを作る
+  const router = useRouter();
+
   const params = useSearchParams();
   const raw = params.get("data");
 
@@ -23,36 +29,49 @@ export default function AnimeDetailPage() {
   const anime = JSON.parse(raw);
 
   const [name, setName] = useState("");
-  const [score, setScore] = useState(10);
+  const [score, setScore] = useState(3);
   const [comment, setComment] = useState("");
   const [reviews, setReviews] = useState<any[]>([]);
 
   const storageKey = `reviews_${anime.mal_id}`;
 
+  // ローカルストレージ読み込み
   useEffect(() => {
     const saved = localStorage.getItem(storageKey);
     if (saved) setReviews(JSON.parse(saved));
   }, []);
 
-  const handleSubmit = () => {
+  // ⭐ 投稿処理（ログイン必須）
+  const handleSubmit = async () => {
+    // Supabase Auth のログイン状態チェック
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     if (!comment.trim()) return;
 
     const newReview = {
-      name: name || "名無しさん",
+      name: name || user.user_metadata?.full_name || "名無しさん",
       score,
       comment,
       date: new Date().toISOString(),
+      user_id: user.id,
     };
 
     const updated = [...reviews, newReview];
     setReviews(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
+
     setComment("");
   };
 
   return (
-    <Box px={5} py={5} textAlign="center"> {/* ⭐ 全体中央寄せ */}
-      {/* ---- アニメ情報 ---- */}
+    <Box px={5} py={5} textAlign="center">
       <Heading fontSize="2xl" mb={3}>
         {anime.title_japanese || anime.title}
       </Heading>
@@ -74,7 +93,7 @@ export default function AnimeDetailPage() {
         {anime.synopsis || "説明文がありません。"}
       </Text>
 
-      {/* ---- 口コミ入力フォーム ---- */}
+      {/* ---- 口コミフォーム ---- */}
       <Box
         p={4}
         border="1px solid #ddd"
@@ -83,13 +102,13 @@ export default function AnimeDetailPage() {
         w="100%"
         maxW="500px"
         mx="auto"
-        textAlign="center"          // ⭐ 中央寄せ
+        textAlign="center"
       >
         <Heading fontSize="lg" mb={3}>
           口コミを書く
         </Heading>
 
-        <VStack align="center" spacing={3} w="100%">
+        <VStack align="center" spacing={3}>
           <Input
             placeholder="ニックネーム（任意）"
             value={name}
@@ -97,15 +116,22 @@ export default function AnimeDetailPage() {
             textAlign="center"
           />
 
-          <Input
-            type="number"
-            min={0}
-            max={10}
+          {/* ハート評価 */}
+          <RatingGroup.Root
             value={score}
-            onChange={(e) => setScore(Number(e.target.value))}
-            placeholder="点数（0〜10）"
-            textAlign="center"
-          />
+            onValueChange={setScore}
+            count={5}
+            size="lg"
+          >
+            <RatingGroup.HiddenInput />
+            <RatingGroup.Control>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <RatingGroup.Item key={index} index={index + 1}>
+                  <RatingGroup.ItemIndicator />
+                </RatingGroup.Item>
+              ))}
+            </RatingGroup.Control>
+          </RatingGroup.Root>
 
           <Textarea
             placeholder="コメントを書く"
@@ -130,8 +156,7 @@ export default function AnimeDetailPage() {
           <Text color="gray.500">まだレビューがありません。</Text>
         )}
 
-        {/* ⭐ 全部中央寄せのレビューカード */}
-        <VStack align="center" spacing={4} w="100%">
+        <VStack align="center" spacing={4}>
           {reviews.map((r, idx) => (
             <Box
               key={idx}
@@ -140,18 +165,22 @@ export default function AnimeDetailPage() {
               borderRadius="8px"
               w="100%"
               maxW="500px"
-              textAlign="center"        // ⭐ コメント全体中央
+              textAlign="center"
             >
-              {/* 名前＋スコア */}
-              <HStack justify="center" gap={5} mb={2}>
-                <Text fontWeight="bold">{r.name}</Text>
-                <Text>⭐ {r.score}</Text>
-              </HStack>
+              <Text fontWeight="bold">{r.name}</Text>
 
-              {/* コメント */}
+              <RatingGroup.Root value={r.score} readOnly count={5}>
+                <RatingGroup.Control>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <RatingGroup.Item key={index} index={index + 1}>
+                      <RatingGroup.ItemIndicator  />
+                    </RatingGroup.Item>
+                  ))}
+                </RatingGroup.Control>
+              </RatingGroup.Root>
+
               <Text mt={2}>{r.comment}</Text>
 
-              {/* 日付 */}
               <Text fontSize="xs" color="gray.500" mt={2}>
                 {new Date(r.date).toLocaleString()}
               </Text>
