@@ -45,7 +45,7 @@ export default function AnimeDetailPage() {
     setEigaLoading(false);
   }
 
-  // ⭐ アニメ情報 + レビュー + 配信状況（配信状況は一番遅い）
+  // ⭐ アニメ情報
   useEffect(() => {
     async function load() {
       if (!id) return;

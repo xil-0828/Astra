@@ -1,7 +1,7 @@
 import { Providers } from "./components/providers";
 import { M_PLUS_1 } from "next/font/google";
 import Header from "./components/ui/Header";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/app/components/ui/toaster";
 // ★ フォントの読み込み
 export const mplus1 = M_PLUS_1({
   subsets: ["latin"],
