@@ -45,28 +45,28 @@ export default function AnimeDetailPage() {
 
   // ⭐ アニメ情報 API（サーバー側で整形済み）
   useEffect(() => {
-  async function load() {
-    if (!id) return;
+    async function load() {
+      if (!id) return;
 
-    // ⭐ ① Jikan API → 最優先
-    const res = await fetch(`/api/detail_jikan/${id}`);
-    const animeData = await res.json();
+      // ⭐ ① Jikan API → 最優先
+      const res = await fetch(`/api/detail_jikan/${id}`);
+      const animeData = await res.json();
 
-    setAnime(animeData);
-    setLoading(false);
+      setAnime(animeData);
+      setLoading(false);
 
-    // ⭐ ② レビューは少し遅れて読み込み（体感が速くなる）
-    setTimeout(() => {
-      loadReviews();
-    }, 300); // ← 300ms が自然（調整可）
+      // ⭐ ② レビューは少し遅れて読み込み（体感が速くなる）
+      setTimeout(() => {
+        loadReviews();
+      }, 300); // ← 300ms が自然（調整可）
 
-    // ⭐ ③ 配信状況も Jikan の後
-    const title = animeData.title_japanese || animeData.title;
-    setTimeout(() => loadEigaData(title), 500);
-  }
+      // ⭐ ③ 配信状況も Jikan の後
+      const title = animeData.title_japanese || animeData.title;
+      setTimeout(() => loadEigaData(title), 500);
+    }
 
-  load();
-}, [id]);
+    load();
+  }, [id]);
 
   if (loading) return <Box p={5}>読み込み中...</Box>;
 
@@ -93,6 +93,32 @@ export default function AnimeDetailPage() {
       <Text fontSize="md" whiteSpace="pre-wrap" mb={8}>
         {anime.synopsis || "説明文がありません。"}
       </Text>
+      {/* 基本情報 */}
+      <Box mb={6} textAlign="left">
+        <Text>形式：{anime.type || "不明"}</Text>
+        <Text>制作：{anime.studios?.join(" / ") || "不明"}</Text>
+        <Text>エピソード：{anime.episodes || "不明"} 話</Text>
+        <Text>
+          放送期間：
+          {anime.aired_from
+            ? `${anime.aired_from} ～ ${anime.aired_to || "放送中"}`
+            : "不明"}
+        </Text>
+      </Box>
+
+      {anime.youtube_id && (
+        <Box my={5}>
+          <Heading size="md" mb={2}>公式PV</Heading>
+          <iframe
+            width="320"
+            height="180"
+            src={`https://www.youtube.com/embed/${anime.youtube_id}`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ borderRadius: "12px" }}
+          />
+        </Box>
+      )}
 
       {/* ⭐ 配信状況 */}
       <Box

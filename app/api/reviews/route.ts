@@ -1,49 +1,10 @@
 // app/api/reviews/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-
+import { analyzePerspectiveDirect } from "@/utils/api/analyzePerspectiveDirect";
 // -----------------------
 // POST: Insert Review
 // -----------------------
-async function analyzePerspectiveDirect(text: string) {
-  const apiKey = process.env.PERSPECTIVE_API_KEY;
-
-  if (!apiKey) {
-    console.error("PERSPECTIVE_API_KEY is missing");
-    throw new Error("Perspective API key missing");
-  }
-
-  const url = `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`;
-
-  const body = {
-    comment: { text },
-    languages: ["ja"],
-    requestedAttributes: {
-      TOXICITY: {},
-      INSULT: {},
-      PROFANITY: {},
-    },
-    doNotStore: true,
-  };
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  // ★ここが超重要（今の 500 の原因はこれ）
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Perspective API Error:", res.status, errorText);
-    throw new Error("Perspective API request failed");
-  }
-
-  return res.json();
-}
-
-
-
 export async function POST(req: Request) {
   const supabase = await createClient();
   const body = await req.json();
@@ -114,7 +75,7 @@ export async function POST(req: Request) {
     result.attributeScores?.PROFANITY?.summaryScore?.value ?? 0;
 
   // 閾値（自由に調整してOK）
-  if (toxicity > 0.75 || insult > 0.75 || profanity > 0.75) {
+  if (toxicity > 0.75 || insult > 0.70 || profanity > 0.65) {
     return NextResponse.json(
       { error: "不適切な表現が含まれているため投稿できません。" },
       { status: 400 }
