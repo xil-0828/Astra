@@ -1,11 +1,13 @@
-// app/api/anime/route.ts
 import { NextResponse } from "next/server";
+import {
+  JikanAnimeSearchResponse,
+} from "@/types/api/jikan_anime_search";
+import { AnimeSearchUI } from "@/types/ui/anime_search";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   let q = searchParams.get("q") ?? "";
 
-  // 安全のため文字数制限
   if (q.length > 50) q = q.slice(0, 50);
 
   try {
@@ -21,23 +23,22 @@ export async function GET(req: Request) {
       );
     }
 
-    const json = await res.json();
+    const json: JikanAnimeSearchResponse = await res.json();
 
-    // ▼ 必要なデータだけ抽出
-    const slim = json.data.map((item: any) => ({
-      mal_id: item.mal_id,
+    const slim: AnimeSearchUI[] = json.data.map((item) => ({
+      id: item.mal_id,
       title: item.title_japanese || item.title,
-      image:
+      imageUrl:
         item.images?.webp?.image_url ||
         item.images?.jpg?.image_url ||
         "",
       episodes: item.episodes ?? null,
-      genres: item.genres?.map((g: any) => g.name) ?? [],
+      genres: item.genres?.map((g) => g.name) ?? [],
     }));
 
     return NextResponse.json({ data: slim });
 
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Server error fetching Jikan API" },
       { status: 500 }

@@ -11,9 +11,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import ReviewForm from "@/app/components/ui/ReviewForm";
 import ReviewList from "@/app/components/ui/ReviewList";
-
 import { AnimeDetailUI } from "@/types/ui/anime_detail";
-
+import { ReviewUI } from "@/types/ui/review";
+import { EigaComResponseUI } from "@/types/ui/eigacom";
 export default function AnimeDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -22,18 +22,46 @@ export default function AnimeDetailPage() {
   const [anime, setAnime] = useState<AnimeDetailUI | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<ReviewUI[]>([]);
 
-  // ⭐ 映画.com 配信状況（今は any のままでOK）
-  const [eigaData, setEigaData] = useState<any>(null);
+  const [eigaData, setEigaData] = useState<EigaComResponseUI | null>(null);
+
   const [eigaLoading, setEigaLoading] = useState(true);
 
   // ⭐ Supabase レビュー取得
   async function loadReviews() {
-    const res = await fetch(`/api/reviews?anime_id=${id}`);
-    const json = await res.json();
-    setReviews(json.data || []);
+  const res = await fetch(`/api/reviews?anime_id=${id}`);
+
+  if (!res.ok) {
+    console.error("reviews api error:", res.status);
+    setReviews([]);
+    return;
   }
+
+  const text = await res.text();
+  if (!text) {
+    // 204 No Content / 空レスポンス
+    setReviews([]);
+    return;
+  }
+
+  let json: { data: ReviewUI[] } | null = null;
+  try {
+    json = JSON.parse(text);
+  } catch (e) {
+    console.error("invalid json:", text);
+    setReviews([]);
+    return;
+  }
+
+  if (!json) {
+  setReviews([]);
+  return;
+}
+
+setReviews(json.data ?? []);
+}
+
 
   // ⭐ 映画.com の配信状況
   async function loadEigaData(title: string) {
@@ -149,7 +177,7 @@ export default function AnimeDetailPage() {
         )}
 
         {!eigaLoading &&
-          eigaData?.items?.map((item: any, i: number) => (
+          eigaData?.items.map((item, i) => (
             <Box
               key={i}
               mb={2}

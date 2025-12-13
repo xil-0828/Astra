@@ -6,32 +6,27 @@ import SearchBar from "./SearchBar";
 import { SimpleGrid, Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 
-// ▼ API で返す構造に合わせる
-type Anime = {
-  mal_id: number;
-  title: string;
-  image: string;
-  episodes: number | null;
-  genres: string[];
-};
+import { AnimeSearchUI } from "@/types/ui/anime_search";
 
 export default function AnimeList() {
   const router = useRouter();
+
   const [query, setQuery] = useState("ブル");
   const [input, setInput] = useState("ブル");
-  const [result, setResult] = useState<Anime[]>([]);
+  const [result, setResult] = useState<AnimeSearchUI[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function loadAnime(q: string) {
     setLoading(true);
     const res = await fetch(`/api/jikan?q=${q}`);
-    const json = await res.json();
+    const json: { data: AnimeSearchUI[] } = await res.json();
     setResult(json.data);
     setLoading(false);
   }
 
   useEffect(() => {
     loadAnime(query);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSearch = () => {
@@ -39,8 +34,8 @@ export default function AnimeList() {
     loadAnime(input);
   };
 
-  const goDetail = (anime: Anime) => {
-    router.push(`/anime/${anime.mal_id}`);
+  const goDetail = (anime: AnimeSearchUI) => {
+    router.push(`/anime/${anime.id}`);
   };
 
   return (
@@ -66,16 +61,13 @@ export default function AnimeList() {
         {!loading &&
           result.map((anime) => (
             <Box
-              key={anime.mal_id}
+              key={anime.id}
               cursor="pointer"
               onClick={() => goDetail(anime)}
             >
               <ReviewThumbnail
-                image={anime.image}
+                image={anime.imageUrl}
                 title={anime.title}
-                // 必要なら表示
-                // episodes={anime.episodes}
-                // genres={anime.genres}
               />
             </Box>
           ))}

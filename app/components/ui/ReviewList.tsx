@@ -7,17 +7,10 @@ import {
   RatingGroup,
   Heading,
 } from "@chakra-ui/react";
-
-type Review = {
-  id: string;
-  user_id: string;
-  score: number;
-  comment: string;
-  created_at: string;
-};
+import { ReviewUI } from "@/types/ui/review";
 
 type Props = {
-  reviews: Review[];
+  reviews: ReviewUI[];
 };
 
 export default function ReviewList({ reviews }: Props) {

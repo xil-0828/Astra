@@ -3,17 +3,18 @@
 import { Button, HStack } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
+import type { User } from "@supabase/supabase-js"
 
 export default function HeaderAuthButtons() {
   const supabase = createClient()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
 
   // ログイン状態を取得
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)
     })
-  }, [])
+  }, [supabase])
 
   // ログインボタン → /login に移動
   const goToLogin = () => {
