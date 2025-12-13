@@ -13,7 +13,7 @@ import ReviewForm from "@/app/components/ui/ReviewForm";
 import ReviewList from "@/app/components/ui/ReviewList";
 import { AnimeDetailUI } from "@/types/ui/anime_detail";
 import { ReviewUI } from "@/types/ui/review";
-
+import { EigaComResponseUI } from "@/types/ui/eigacom";
 export default function AnimeDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -24,7 +24,8 @@ export default function AnimeDetailPage() {
 
   const [reviews, setReviews] = useState<ReviewUI[]>([]);
 
-  const [eigaData, setEigaData] = useState<any>(null);
+  const [eigaData, setEigaData] = useState<EigaComResponseUI | null>(null);
+
   const [eigaLoading, setEigaLoading] = useState(true);
 
   // ⭐ Supabase レビュー取得
@@ -148,7 +149,7 @@ export default function AnimeDetailPage() {
         )}
 
         {!eigaLoading &&
-          eigaData?.items?.map((item: any, i: number) => (
+          eigaData?.items.map((item, i) => (
             <Box
               key={i}
               mb={2}
