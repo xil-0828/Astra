@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { EigaComItem, EigaComResponse } from "@/types/api/eigacom";
 
 /** 除外したいサービス一覧 */
 const EXCLUDE_SERVICES = ["ビデオマーケット", "Google", "TELASA"];
@@ -12,8 +13,8 @@ function normalize(str: string) {
     .toLowerCase();
 }
 
-function removeDuplicates(items: any[]) {
-  const map = new Map();
+function removeDuplicates(items: EigaComItem[]): EigaComItem[] {
+  const map = new Map<string, EigaComItem>();
 
   for (const item of items) {
     const key = `${normalize(item.title)}__${normalize(item.service)}`;
@@ -30,37 +31,40 @@ function extractTotalCount(html: string): number {
 }
 
 /** 1ページ分の HTML から作品ブロックを抽出 & フィルタ */
-function parseItems(html: string, queryTitle: string) {
+function parseItems(html: string, queryTitle: string): EigaComItem[] {
   const blocks = html.split('<li class="col-s-3">').slice(1);
   const normQuery = normalize(queryTitle);
 
   return blocks
-    .map((block) => {
+    .map((block): EigaComItem | null => {
       const title =
         block.match(/<p class="title">([\s\S]*?)<\/p>/)?.[1]?.trim() ?? "";
 
       const service =
         block.match(/<a class="btn"[^>]*>([\s\S]*?)<\/a>/)?.[1]?.trim() ?? "";
 
-      // ★サービス除外（部分一致 OK）
       if (EXCLUDE_SERVICES.some((ex) => service.includes(ex))) return null;
 
-      // ★タイトル類似度フィルタ
       const diff = Math.abs(normQuery.length - normalize(title).length);
       if (diff >= 8) return null;
 
-      const url = block.match(/<a class="btn"[^>]+href="([^"]+)"/)?.[1] ?? "";
+      const url =
+        block.match(/<a class="btn"[^>]+href="([^"]+)"/)?.[1] ?? "";
+
       const releaseStr =
         block.match(/<small class="release">([\s\S]*?)<\/small>/)?.[1]?.trim() ??
         "";
 
       return { title, releaseStr, service, url };
     })
-    .filter(Boolean);
+    .filter((v): v is EigaComItem => v !== null);
 }
 
+
 /** 映画.com 全ページスクレイピング */
-export async function scrapeEigaComAll(title: string) {
+export async function scrapeEigaComAll(
+  title: string
+): Promise<EigaComResponse> {
   const base =
     "https://eiga.com/rental/q/?name=" +
     encodeURIComponent(title) +
@@ -75,7 +79,8 @@ export async function scrapeEigaComAll(title: string) {
   const perPage = 20;
   const totalPages = Math.ceil(total / perPage);
 
-  const allItems: any[] = [];
+  const allItems: EigaComItem[] = [];
+
 
   // 1ページ目パース
   allItems.push(...parseItems(firstHtml, title));
@@ -100,7 +105,6 @@ export async function scrapeEigaComAll(title: string) {
     items: uniqueItems,
   };
 }
-
 export async function POST(req: Request) {
   try {
     const { title } = await req.json();
@@ -110,9 +114,16 @@ export async function POST(req: Request) {
 
     const result = await scrapeEigaComAll(title);
     return NextResponse.json(result);
-  } catch (e: any) {
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return NextResponse.json(
+        { error: e.message, stack: e.stack },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: e.message, stack: e.stack },
+      { error: "Unknown error" },
       { status: 500 }
     );
   }
