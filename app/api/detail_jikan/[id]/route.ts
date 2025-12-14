@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 // app/api/anime/[id]/route.ts
 import { NextResponse } from "next/server";
 import { toAnimeDetailUI } from "@/utils/transform/animeDetail";

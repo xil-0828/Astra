@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { NextResponse } from "next/server";
 import { EigaComItem, EigaComResponse } from "@/types/api/eigacom";
 

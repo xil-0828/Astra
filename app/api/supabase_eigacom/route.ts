@@ -1,3 +1,6 @@
+export const runtime = "edge";
+
+
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { scrapeEigaComAll } from "../render/route";
