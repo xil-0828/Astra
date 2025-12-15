@@ -1,0 +1,64 @@
+name: Issue Due Reminder to Discord
+
+on:
+  schedule:
+    # 毎日 09:00 JST（UTC 00:00）
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check due issues and notify Discord
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          script: |
+            const webhook = process.env.DISCORD_WEBHOOK_URL;
+            if (!webhook) {
+              core.setFailed("DISCORD_WEBHOOK_URL is not set");
+              return;
+            }
+
+            const today = new Date().toISOString().slice(0, 10);
+
+            // リポジトリの open Issue を全取得
+            const issues = await github.paginate(
+              github.rest.issues.listForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "open",
+              }
+            );
+
+            // Due が今日 or 過去の Issue を抽出
+            const dueIssues = issues.filter(issue => {
+              if (!issue.body) return false;
+              const match = issue.body.match(/## Due\s*(\d{4}-\d{2}-\d{2})/);
+              if (!match) return false;
+              const due = match[1];
+              return due <= today;
+            });
+
+            if (dueIssues.length === 0) {
+              console.log("No due issues");
+              return;
+            }
+
+            const message = [
+              "⏰ **期限が来たIssueがあります**",
+              "",
+              ...dueIssues.map(issue =>
+                `• **${issue.title}**\n  ${issue.html_url}`
+              ),
+            ].join("\n");
+
+            await fetch(webhook, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ content: message }),
+            });
