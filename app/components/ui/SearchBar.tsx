@@ -1,7 +1,8 @@
 "use client";
 
-import { Input, InputGroup, Kbd } from "@chakra-ui/react"
-import { LuSearch } from "react-icons/lu"
+import { Input, InputGroup } from "@chakra-ui/react";
+import { LuSearch } from "react-icons/lu";
+
 type Props = {
   value: string;
   onChange: (value: string) => void;
@@ -10,12 +11,8 @@ type Props = {
 
 export default function SearchBar({ value, onChange, onSearch }: Props) {
   const handleChange = (v: string) => {
-    // ① 50文字上限
     if (v.length > 50) return;
-
-    // ② 制御文字を除去
     const cleaned = v.replace(/[\u0000-\u001F\u007F]/g, "");
-
     onChange(cleaned);
   };
 
@@ -28,11 +25,15 @@ export default function SearchBar({ value, onChange, onSearch }: Props) {
         <LuSearch
           size={24}
           strokeWidth={1}
-          color="color.text.secondary"
+          color="var(--chakra-colors-text-secondary)"
         />
       }
     >
       <Input
+        value={value}
+        onChange={(e) => handleChange(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && onSearch()}
+        name="search"
         textStyle="sm.light"
         placeholder="Search to Types"
         css={{
@@ -40,10 +41,9 @@ export default function SearchBar({ value, onChange, onSearch }: Props) {
         }}
         _placeholder={{
           fontSize: "14px",
-          color: "color.text.secondary",
+          color: "colors.text.secondary",
         }}
       />
     </InputGroup>
-
   );
 }
