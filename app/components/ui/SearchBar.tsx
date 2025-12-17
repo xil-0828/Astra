@@ -1,7 +1,7 @@
 "use client";
 
-import { HStack, Input, Button } from "@chakra-ui/react";
-
+import { Input, InputGroup, Kbd } from "@chakra-ui/react"
+import { LuSearch } from "react-icons/lu"
 type Props = {
   value: string;
   onChange: (value: string) => void;
@@ -20,17 +20,30 @@ export default function SearchBar({ value, onChange, onSearch }: Props) {
   };
 
   return (
-    <HStack mb={4} w="100%">
+    <InputGroup
+      w="265px"
+      h="40px"
+      flex="1"
+      startElement={
+        <LuSearch
+          size={24}
+          strokeWidth={1}
+          color="color.text.secondary"
+        />
+      }
+    >
       <Input
-        value={value}
-        onChange={(e) => handleChange(e.target.value)}
-        placeholder="作品名で検索"
-        fontSize="md"
-        onKeyDown={(e) => e.key === "Enter" && onSearch()}
+        textStyle="sm.light"
+        placeholder="Search to Types"
+        css={{
+          "--focus-color": "var(--chakra-colors-brand-primary)",
+        }}
+        _placeholder={{
+          fontSize: "14px",
+          color: "color.text.secondary",
+        }}
       />
-      <Button onClick={onSearch} colorScheme="blue">
-        検索
-      </Button>
-    </HStack>
+    </InputGroup>
+
   );
 }

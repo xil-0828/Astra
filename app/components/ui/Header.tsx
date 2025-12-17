@@ -1,36 +1,46 @@
+"use client";
 
+import {
+  Box,
+  HStack,
+  Text,
+  Button,
+} from "@chakra-ui/react";
+import SearchBar from "./SearchBar";
 
-import { Box, Flex, Text, HStack } from "@chakra-ui/react";
-import HeaderAuthButtons from "./HeaderAuthButtons";
-
-export default async function Header() {
+export default function Header() {
   return (
     <Box
       as="header"
-      position="sticky"
-      top="0"
-      zIndex="100"
-      bg="white"
+      w="100%"
+      px="20px"
+      py="20px"
+      bg="bg.base"
+      borderBottom="1px solid"
+      borderColor="border.default"
     >
-      <Flex
-        align="center"
-        justify="space-between"
-        px="20"
-        py="3"
-        mx="auto"
-        w="100%"
-      >
-        {/* 左側：ロゴ */}
-        <Text fontSize="xl" fontWeight="bold" color="#4c4849ff">
-          Astra
+      <HStack justify="space-between" align="center">
+        {/* 左：キャッチコピー */}
+        <Text textStyle="xs.light">
+          アニメの評価・感想を共有するレビューサイト
         </Text>
 
-        {/* 右側：ログイン/ログアウトボタン */}
-        <HStack>
-          <HeaderAuthButtons />
+        {/* 右：検索 + ログイン */}
+        <HStack gap={3}>
+          <SearchBar />
+
+          <Button
+            bg="brand.primary"
+            color="bg.base"
+            size="sm"
+            fontWeight={400}
+            borderRadius="4px"
+            _hover={{ opacity: 0.9 }}
+          >
+            Login
+          </Button>
         </HStack>
-      </Flex>
+      </HStack>
     </Box>
   );
 }
-//
