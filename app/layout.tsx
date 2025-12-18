@@ -37,7 +37,7 @@ export default function RootLayout({
         }}
       >
         <Providers>
-          <HStack align="start">
+          <HStack align="start" gap={0}>
             {/* Sidebar：sticky で見た目固定 */}
             <Box position="sticky" top="0" alignSelf="flex-start">
               <Sidebar />
@@ -45,7 +45,7 @@ export default function RootLayout({
 
             {/* Main */}
 
-            <VStack align="stretch" flex="1" minW={0}>
+            <VStack align="stretch" flex="1" minW={0} gap={0}>
               {/* Header：sticky */}
               <Box position="sticky" top="0" zIndex={10} bg="white">
                 <Header />
