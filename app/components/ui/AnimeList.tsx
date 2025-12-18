@@ -39,13 +39,11 @@ export default function AnimeList() {
   };
 
   return (
-    <Box w="100%" px={3} py={3} >
-      {/* 🔍 検索バー */}
+    <Box w="100%">
       <SimpleGrid
         w="100%"
         gap={6}
         columns={{ base: 1, sm: 2, md: 3, lg: 3 }}
-        placeItems="center"
       >
         {loading &&
           [...Array(6)].map((_, i) => (
