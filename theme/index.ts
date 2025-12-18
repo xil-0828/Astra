@@ -1,7 +1,6 @@
 // theme/index.ts
 import { createSystem, defaultConfig } from "@chakra-ui/react";
 import { colors } from "./colors";
-import { textStyles } from "./typography";
 import { semanticTokens } from "./semanticTokens"
 import { inputRecipe } from "./recipes/input";
 const theme = createSystem(defaultConfig, {
@@ -9,10 +8,9 @@ const theme = createSystem(defaultConfig, {
     tokens: {
       colors,
     },
-    semanticTokens, 
-    textStyles,
+    semanticTokens,
     recipes: {
-      input: inputRecipe, // ← ★ここ
+      input: inputRecipe,
     },
   },
 });

@@ -5,11 +5,12 @@ import { Toaster } from "@/app/components/ui/toaster";
 // ★ フォントの読み込み
 export const mplus = localFont({
   src: [
-    { path: "../fonts/MPLUS1-Light.woff2", weight: "300", style: "normal" },
-    { path: "../fonts/MPLUS1-Regular.woff2", weight: "400", style: "normal" },
-    { path: "../fonts/MPLUS1-Medium.woff2", weight: "500", style: "normal" },
+    {
+      path: "../fonts/MPLUS1-VariableFont_wght.ttf",
+      weight: "100 900",   // ← Variable Font の指定
+      style: "normal",
+    },
   ],
-  variable: "--font-mplus",
   display: "swap",
 });
 // ★ SEO metadata
@@ -22,7 +23,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       {/* ➤ フォントを body に適用 */}
-      <body className={mplus.className} style={{ background: "white" }}>
+      <body className={mplus.className} style={{ background: "white", WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",}} >
         <Providers>
           <Header />
           {children}

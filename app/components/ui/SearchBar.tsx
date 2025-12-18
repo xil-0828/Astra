@@ -34,13 +34,14 @@ export default function SearchBar({ value, onChange, onSearch }: Props) {
         onChange={(e) => handleChange(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && onSearch()}
         name="search"
-        textStyle="sm.light"
+        textStyle="sm"
+        fontWeight="light"
         placeholder="Search to Types"
         css={{
           "--focus-color": "var(--chakra-colors-brand-primary)",
         }}
         _placeholder={{
-          fontSize: "14px",
+          fontSize: "normal",
           color: "colors.text.secondary",
         }}
       />
