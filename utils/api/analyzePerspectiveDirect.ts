@@ -1,4 +1,4 @@
-export async function analyzePerspectiveDirect(text: string) {
+export async function analyzePerspectiveDirect(text: string, signal: AbortSignal) {
   const apiKey = process.env.PERSPECTIVE_API_KEY;
 
   if (!apiKey) {
